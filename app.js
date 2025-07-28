@@ -21,20 +21,33 @@ async function validateCookies (req, res, next) {
 
 app.use(myLogger);
 app.use(requestTime);
+app.use('/', (req, res, next) => {
+  console.log(`Request Method: ${req.method}`);
+  next();
+})
 
-app.use(cookieParser());
-app.use(validateCookies);
+// app.use(cookieParser());
+// app.use(validateCookies);
 
+
+app.get('/', (req, res, next) => {
+  let responseText = 'Hello World!<br>';
+  req.responseText = responseText;
+  next();
+}, (req, res, next) => {
+  req.responseText += `<small>Requested at: ${req.requestTime}</small>`;
+  next();
+}, (req, res, next) => {
+  res.send(req.responseText);
+});
+
+app.get('/', (req, res) => {
+  res.send('Siuuuu');
+});
 
 // error handler
 app.use((err, req, res, next) => {
   res.status(400).send(err.message);
-});
-
-app.get('/', (req, res) => {
-  let responseText = 'Hello World!<br>';
-  responseText += `<small>Requested at: ${req.requestTime}</small>`;
-  res.send(responseText);
 });
 
 app.listen(PORT, () => {
